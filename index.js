@@ -45,11 +45,13 @@ $(window).on('load', function () {
     success: function (response) {
       const positionData = $.csv.toObjects(response);
       console.log(positionData);
-      const image = {
-          url: "./markerIcon.png",
+      const image = (pending) => {
+        return {
+          url: pending ? "./pendingIcon.png" : "./markerIcon.png",
           scaledSize: new google.maps.Size(30, 30)
+        };
       };
-      
+
       var marker;
       var infowindow = new google.maps.InfoWindow();
       for (let i = 0; i < positionData.length; i++) {
@@ -59,15 +61,19 @@ $(window).on('load', function () {
             lng: parseFloat(positionData[i].lng)
           }),
           map: map,
-          icon: image
+          icon: image(!positionData[i].conducted)
         });
         google.maps.event.addListener(marker, 'click', (function (marker, i) {
           var boxText = document.createElement("p");
-          boxText.innerHTML = `<p class="hook">
-          <div>${positionData[i].name || "Hospital Name Not Mentioned"}</div>
-          <div>Survey conducted by: ${positionData[i].conducted || "IBWG"}</div>
-          <div>Survey conducted on: ${positionData[i].conducted_on || "No Time"}</div>
-          <div>Address: ${positionData[i].address || "Private address"}</div>
+          boxText.innerHTML = positionData[i].conducted ? `<p class="hook">
+          <h3>${positionData[i].name || "Hospital Name Not Mentioned"}</h3>
+          <div><b>Survey conducted by:</b> ${positionData[i].conducted || "IBWG"}</div>
+          <div><b>Survey conducted on:</b> ${positionData[i].conducted_on || "No Time"}</div>
+          <div><b>Address:</b> ${positionData[i].address || "Private address"}</div>
+          </p>` : `<p class="hook">
+          <h3>${positionData[i].name || "Hospital Name Not Mentioned"}</h3>
+          <div><b>Address:</b> ${positionData[i].address || "Private address"}</div>
+          <h4>Pending Survey</h4>
           </p>`;
           return function () {
             infowindow.setContent(boxText);
