@@ -65,9 +65,8 @@ $(window).on('load', function () {
           var boxText = document.createElement("p");
           boxText.innerHTML = `<p class="hook">
           <div>${positionData[i].name || "Hospital Name Not Mentioned"}</div>
-          <div>Survey conducted by: ${positionData[i].conducted || "No Name"}</div>
+          <div>Survey conducted by: ${positionData[i].conducted || "IBWG"}</div>
           <div>Survey conducted on: ${positionData[i].conducted_on || "No Time"}</div>
-          <div>Survey city: ${positionData[i].city || "No Time"}</div>
           <div>Address: ${positionData[i].address || "Private address"}</div>
           </p>`;
           return function () {
