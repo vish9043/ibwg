@@ -73,7 +73,7 @@ $(window).on('load', function () {
           </p>` : `<p class="hook">
           <h3>${positionData[i].name || "Hospital Name Not Mentioned"}</h3>
           <div><b>Address:</b> ${positionData[i].address || "Private address"}</div>
-          <h4>Pending Survey</h4>
+          <h4>Register HCF</h4>
           </p>`;
           return function () {
             infowindow.setContent(boxText);
