@@ -48,7 +48,7 @@ $(window).on('load', function () {
       const image = (pending) => {
         return {
           url: pending ? "./pendingIcon.png" : "./markerIcon.png",
-          scaledSize: new google.maps.Size(30, 30)
+          scaledSize: new google.maps.Size(20, 20)
         };
       };
 
