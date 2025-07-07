@@ -7,10 +7,10 @@ function initMap() {
   });
 
   const locationButton = document.createElement("button");
-
   locationButton.textContent = "Around Me";
   locationButton.classList.add("custom-map-control-button");
   map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(locationButton);
+
   locationButton.addEventListener("click", () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -19,71 +19,80 @@ function initMap() {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-
           map.setCenter(pos);
           map.setZoom(16);
         }
       );
     } else {
       // Browser doesn't support Geolocation
+      alert("Geolocation is not supported by your browser.");
     }
   });
 }
 
 window.initMap = initMap;
 
-$(window).on('load', function () {
-  // sheetID you can find in the URL of your spreadsheet after "spreadsheet/d/"
+$(window).on("load", function () {
   const sheetId = "1FTkdNlwxdFYtVdlfQ532O-I0naBiEzFJ9lKoI95rwRA";
-  // sheetName is the name of the TAB in your spreadsheet (default is "Sheet1")
   const sheetName = encodeURIComponent("Sheet1");
-  const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName}`;
+  const sheetURL = https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${sheetName};
+
   $.ajax({
     type: "GET",
     url: sheetURL,
     dataType: "text",
     success: function (response) {
       const positionData = $.csv.toObjects(response);
-      console.log(positionData);
-      const image = (pending) => {
+
+      const image = (pending, ccaMissing) => {
+        if (ccaMissing) {
+          return {
+            url: ${ctx}/static/img/blue.png,
+            scaledSize: new google.maps.Size(30, 30),
+          };
+        }
         return {
-          url: pending ? "./pendingIcon.png" : "./markerIcon.png",
-          scaledSize: new google.maps.Size(20, 20)
+          url: pending
+            ? ${ctx}/static/img/pendingIcon.png
+            : ${ctx}/static/img/markerIcon.png,
+          scaledSize: new google.maps.Size(30, 30),
         };
       };
 
-      var marker;
-      var infowindow = new google.maps.InfoWindow();
-      for (let i = 0; i < positionData.length; i++) {
-        marker = new google.maps.Marker({
-          position: new google.maps.LatLng({
-            lat: parseFloat(positionData[i].lat),
-            lng: parseFloat(positionData[i].lng)
-          }),
-          map: map,
-          icon: image(!positionData[i].conducted)
-        });
-        google.maps.event.addListener(marker, 'click', (function (marker, i) {
-          var boxText = document.createElement("p");
-          boxText.innerHTML = positionData[i].conducted ? `<p class="hook">
-          <h3>${positionData[i].name || "Hospital Name Not Mentioned"}</h3>
-        //  <div><b>Survey conducted by:</b> ${positionData[i].conducted || "IBWG"}</div>
-          <div><b>Survey conducted on:</b> ${positionData[i].conducted_on || "No Time"}</div>
-           <div><b>HCF TYPE:</b> ${positionData[i].hcftype || "No Time"}</div>
-          <div><b>Address:</b> ${positionData[i].address || "Private address"}</div>
-          </p>` : `<p class="hook">
-          <h3>${positionData[i].name || "Hospital Name Not Mentioned"}</h3>
-          <div><b>Address:</b> ${positionData[i].address || "Private address"}</div>
-          <h4>Register HCF</h4>
-          </p>`;
-          return function () {
-            infowindow.setContent(boxText);
-            infowindow.open(map, marker);
-          }
-        })(marker, i));
-      }
-      marker.setMap(map);
-    },
-  });
-});
+      const infowindow = new google.maps.InfoWindow();
 
+      positionData.forEach((pos, i) => {
+        const isPending = !pos.conducted;
+        const isCCAMissing = pos.CCA;
+
+        const marker = new google.maps.Marker({
+          position: {
+            lat: parseFloat(pos.lat),
+            lng: parseFloat(pos.lng),
+          },
+          map: map,
+          icon: image(isPending, isCCAMissing),
+        });
+
+        google.maps.event.addListener(marker, "click", () => {
+          const html = pos.conducted
+            ? `<p class="hook">
+                 <h3>${pos.name || "Hospital Name Not Mentioned"}</h3>
+                 <div><b>Survey conducted by:</b> ${pos.conducted || "IBWG"}</div>
+                 <div><b>Survey conducted on:</b> ${pos.conducted_on || "No Time"}</div>
+                 <div><b>HCF TYPE:</b> ${pos.hcftype || "No Type"}</div>
+                 <div><b>Address:</b> ${pos.address || "Private address"}</div>
+               </p>`
+            : `<p class="hook">
+                 <h3>${pos.name || "Hospital Name Not Mentioned"}</h3>
+                 <div><b>Address:</b> ${pos.address || "Private address"}</div>
+                 <h4>Register HCF</h4>
+               </p>`;
+
+          infowindow.setContent(html);
+          infowindow.open(map, marker);
+        });
+      });
+    },
+  });
+});
