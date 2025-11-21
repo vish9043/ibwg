@@ -69,6 +69,9 @@ $(window).on('load', function () {
           <h3>${positionData[i].name || "Hospital Name Not Mentioned"}</h3>
         //  <div><b>Survey conducted by:</b> ${positionData[i].conducted || "IBWG"}</div>
           <div><b>Survey conducted on:</b> ${positionData[i].conducted_on || "No Time"}</div>
+             <div><b>port id:</b> ${positionData[i].portid || "No port id"}</div> 
+                <div><b>Doctor Name:</b> ${positionData[i].doctor_name || "no Doctor name "}</div> 
+                 <div><b>Survey Id:</b> ${positionData[i].Survey_Number || "No Survey ID "}</div> 
            <div><b>HCF TYPE:</b> ${positionData[i].hcftype || "No Time"}</div>
           <div><b>Address:</b> ${positionData[i].address || "Private address"}</div>
           </p>` : `<p class="hook">
